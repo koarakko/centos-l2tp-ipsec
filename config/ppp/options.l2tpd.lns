@@ -1,0 +1,10 @@
+name xl2tp
+refuse-pap
+require-chap
+refuse-mschap
+refuse-mschap-v2
+nodefaultroute
+nobsdcomp
+mtu 1280
+mru 1280
+logfile /var/log/xl2tpd.log

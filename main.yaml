@@ -1,0 +1,80 @@
+- hosts: server
+  tasks:
+    - name: install rpm
+      yum:
+        name: https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm 
+      become: true
+
+    - name: upgrade all packages with yum
+      yum: name=* state=latest
+      become: true
+
+    - name: Install the packages with yum
+      yum: name={{ item }} state=installed
+      with_items:
+      - strongswan
+      - xl2tpd
+      become: true
+
+    - name: restart strongswan
+      systemd:
+        name: strongswan
+        state: restarted
+        daemon_reload: yes
+        enabled: yes
+      become: yes
+
+    - name: restart xl2tpd
+      systemd:
+        name: xl2tpd
+        state: restarted
+        daemon_reload: yes
+        enabled: yes
+      become: yes
+
+    - name: Setting strongswan config
+      template:
+        src: ./config/strongswan/ipsec.conf
+        dest: /etc/strongswan/ipsec.conf
+      become: yes
+
+    - name: Setting strongswan secret
+      template:
+        src: ./config/strongswan/ipsec.secrets
+        dest: /etc/strongswan/ipsec.secrets
+      become: yes
+
+    - name: Setting xl2tpd config
+      template:
+        src: ./config/xl2tpd/xl2tpd.conf
+        dest: /etc/xl2tpd/xl2tpd.conf
+      become: yes
+
+    - name: Setting ppp config
+      template:
+        src: ./config/ppp/options.l2tpd.lns
+        dest: /etc/ppp/options.l2tpd.lns
+      become: yes
+
+    - name: Setting ppp secret
+      template:
+        src: ./config/ppp/chap-secrets
+        dest: /etc/ppp/chap-secrets
+      become: yes
+
+    - name: restart strongswan
+      systemd:
+        name: strongswan
+        state: restarted
+        daemon_reload: yes
+        enabled: yes
+      become: yes
+
+    - name: restart xl2tpd
+      systemd:
+        name: xl2tpd
+        state: restarted
+        daemon_reload: yes
+        enabled: yes
+      become: yes
+
